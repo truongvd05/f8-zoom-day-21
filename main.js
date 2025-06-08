@@ -6,7 +6,12 @@ let users = [
     { name: "thuc", score: 90 },
 ];
 
-let fruits = ["banana", ["orange", ["apple"]], "strawberry"];
+let fruits = [
+    "banana",
+    ["orange", "watermelon", ["apple"]],
+    "strawberry",
+    ["pineapple"],
+];
 let fruits2 = ["mango", "grapes", "durian"];
 
 console.log("number", numbers);
@@ -14,9 +19,38 @@ console.log("user ", users);
 console.log("fruits", fruits);
 console.log("fruits2", fruits2);
 
+Array.prototype.flat2 = function (number) {
+    let length = this.length;
+    let newArr = [];
+    let finsish = [];
+    for (let i = 0; i < length; i++) {
+        // copy ra mảng mới
+        newArr[i] = this[i];
+    }
+    while (newArr.length > 0) {
+        // xóa phần tử cuối và gán vào retult
+        let result = newArr.pop();
+        // kiểm tra xem result có là mảng
+        if (Array.isArray(result)) {
+            // lặp qua nếu đó là mảng đa cấp có nhiều phần tử
+            for (let i = 0; i < result.length; i++) {
+                // thêm phần tử vào cuối mảng mới
+                newArr[newArr.length] = result[i];
+            }
+        } else {
+            finsish.unshift(result);
+        }
+    }
+    return finsish;
+};
+
+let newFruits2 = fruits.flat2(1);
+console.log("flat2: làm phẳng fruits. chỉ làm phẳng ifinity :))", newFruits2);
+
 Array.prototype.push2 = function (...thisArg) {
     let length = thisArg.length;
     for (let i = 0; i < length; i++) {
+        // thêm phần tử vào cuối mảng và tăng độ dài
         this[this.length] = thisArg[i];
     }
     return this.length;
@@ -30,11 +64,14 @@ Array.prototype.concat2 = function (...arr) {
     let length = this.length;
     let newArrLength = arr.length;
     for (let i = 0; i < length; i++) {
+        // tạo ra mảng mới vi concat không làm thay đổi mảng cũ
         newArr[i] = this[i];
     }
     for (let i = 0; i < newArrLength; i++) {
+        // thêm phần tử vào cuối mảng và tăng độ dài
         newArr[newArr.length] = arr[i];
     }
+    // vì concat làm phảng 1 cấp
     newArr = newArr.flat(1);
     return newArr;
 };
@@ -45,6 +82,7 @@ console.log("concat2: fruits2 + fruits", newFruits);
 Array.prototype.find2 = function (callback, thisArg) {
     const length = this.length;
     for (let i = 0; i < length; i++) {
+        // bỏ qua phần tử trống
         if (i in this) {
             if (callback.call(thisArg, this[i], i, this)) {
                 return this[i];
@@ -59,6 +97,7 @@ console.log("find2: number > 5:", resultNumber);
 
 Array.prototype.map2 = function (callback, thisArg) {
     const length = this.length;
+    // tạo mảng mới có độ dài bằng mảng cũ để có thể lặp qua phần tử empty
     let newArr = new Array(length);
     for (let i = 0; i < length; i++) {
         if (i in this) {
