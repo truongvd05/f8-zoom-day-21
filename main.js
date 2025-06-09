@@ -19,29 +19,33 @@ console.log("user ", users);
 console.log("fruits", fruits);
 console.log("fruits2", fruits2);
 
-Array.prototype.flat2 = function (number) {
-    let length = this.length;
-    let newArr = [];
-    let finsish = [];
-    for (let i = 0; i < length; i++) {
-        // copy ra mảng mới
-        newArr[i] = this[i];
-    }
-    while (newArr.length > 0) {
-        // xóa phần tử cuối và gán vào retult
-        let result = newArr.pop();
-        // kiểm tra xem result có là mảng
-        if (Array.isArray(result)) {
-            // lặp qua nếu đó là mảng đa cấp có nhiều phần tử
-            for (let i = 0; i < result.length; i++) {
-                // thêm phần tử vào cuối mảng mới
-                newArr[newArr.length] = result[i];
+Array.prototype.flat2 = function (depth = 1) {
+    if (depth === 0) {
+        let result = [];
+        for (let i = 0; i < this.length; i++) {
+            if (i in this) {
+                result.push(this[i]);
             }
-        } else {
-            finsish.unshift(result);
+        }
+        return result;
+    }
+
+    function flatten(arr, currentDepth, result) {
+        for (let i = 0; i < arr.length; i++) {
+            if (i in arr) {
+                let element = arr[i];
+                if (Array.isArray(element) && currentDepth < depth) {
+                    flatten(element, currentDepth + 1, result);
+                } else {
+                    result.push(element);
+                }
+            }
         }
     }
-    return finsish;
+
+    let result = [];
+    flatten(this, 0, result);
+    return result;
 };
 
 let newFruits2 = fruits.flat2(1);
